@@ -7,11 +7,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9fafb; /* Lightest gray for body */
+            /* Degradê de Azul Royal para Amarelo Gema */
+            background: linear-gradient(135deg, #4169E1 0%, #FFD700 100%); 
+            color: #1a202c; 
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased; /* Melhora renderização da fonte */
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .container {
+            max-width: 1000px; /* Aumentado um pouco mais */
         }
         .modal {
             display: none; 
@@ -22,194 +30,279 @@
             width: 100%; 
             height: 100%; 
             overflow: auto; 
-            background-color: rgba(0,0,0,0.4); 
+            background-color: rgba(0,0,0,0.7); /* Backdrop mais escuro */
         }
         .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto; 
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; 
-            max-width: 600px;
-            border-radius: 0.5rem;
+            /* Degradê pastel um pouco mais escuro para o modal */
+            background: linear-gradient(135deg, #b0d8f0 0%, #ffecb3 100%); 
+            margin: 6% auto; 
+            padding: 36px; 
+            border: 1px solid #9bb7d0; /* Borda azul acinzentado um pouco mais escura */
+            width: 90%; 
+            max-width: 600px; 
+            border-radius: 24px; /* Mais arredondado */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); /* Sombra mais suave */
         }
+        .modal-content .form-label { /* Labels dentro do modal com cor escura para contraste */
+            color: #374151; /* Cinza escuro */
+        }
+        .modal-content h3 { /* Título do modal com cor escura */
+            color: #1f2937; /* Azul bem escuro */
+        }
+
         .close-button {
-            color: #aaa;
+            color: #4a5568; /* Cinza escuro para contraste com fundo pastel */
             float: right;
-            font-size: 28px;
+            font-size: 30px;
             font-weight: bold;
+            transition: color 0.2s ease-in-out, transform 0.2s ease;
         }
         .close-button:hover,
         .close-button:focus {
-            color: black;
+            color: #1f2937; 
+            transform: scale(1.15);
             text-decoration: none;
             cursor: pointer;
         }
-        textarea::-webkit-scrollbar {
-            width: 8px;
-        }
-        textarea::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        textarea::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
-        textarea::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; } 
+        textarea::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; } 
+        textarea::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
         .form-input, .form-textarea, .form-select {
-            @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm;
+            @apply w-full px-5 py-3.5 border border-gray-400 rounded-3xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm; /* rounded-3xl e ring roxo */
+            background-color: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px); 
+            color: #1a202c; 
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease;
         }
-        .form-label {
-            @apply block text-sm font-medium text-gray-700 mb-1;
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            background-color: rgba(255, 255, 255, 0.95);
         }
-        .btn {
-            @apply px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2;
+        .form-select:disabled {
+            background-color: rgba(229, 231, 235, 0.8); 
+            color: #6b7280; 
+            cursor: not-allowed;
+            border-color: #d1d5db;
         }
-        .btn-primary {
-            @apply bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500;
+        .form-label { /* Labels fora do modal */
+            @apply block text-sm font-semibold text-gray-100 mb-2; 
         }
-        .btn-secondary {
-            @apply bg-gray-600 hover:bg-gray-700 focus:ring-gray-500;
+        .btn { 
+            @apply px-7 py-3.5 border border-transparent rounded-3xl shadow-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900; /* rounded-3xl e offset do ring */
+            transition: background-color 0.2s ease-in-out, transform 0.15s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .btn:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            transform: translateY(-1px); /* Leve elevação no hover */
+        }
+        .btn:active {
+            transform: translateY(2px); /* Efeito de pressionar mais pronunciado */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .btn-primary { 
+            @apply text-white bg-purple-600 hover:bg-purple-700 focus:ring-purple-500;
+        }
+        .btn-secondary { 
+            @apply text-gray-800 bg-gray-50 hover:bg-gray-100 border-gray-300 focus:ring-purple-500;
         }
         .btn-danger {
-            @apply bg-red-600 hover:bg-red-700 focus:ring-red-500;
+            @apply text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
         }
         .btn-success {
-            @apply bg-green-600 hover:bg-green-700 focus:ring-green-500;
+            @apply text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500;
         }
-        .stage-card {
-            @apply bg-white p-4 rounded-lg shadow mb-4 border border-gray-200;
+        .btn-add-stage { 
+            @apply flex items-center justify-center gap-2.5 text-white bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:from-pink-600 hover:via-purple-700 hover:to-indigo-700 focus:ring-pink-500;
         }
-        .section-container {
-            @apply bg-white p-6 rounded-lg shadow-lg mb-8 border border-gray-200;
+
+        .stage-card { 
+            @apply bg-white/75 backdrop-blur-lg p-6 rounded-[28px] shadow-xl mb-8 border border-white/30; /* rounded-[28px] para ser bem arredondado */
         }
-        .section-container-alt { 
-            @apply bg-gray-50 p-6 rounded-lg shadow-lg mb-8 border border-gray-200;
+        .section-container { 
+            @apply bg-white/50 backdrop-blur-2xl p-10 rounded-[32px] shadow-2xl mb-14 border border-white/20; /* rounded-[32px] e mais blur */
         }
         .section-title {
-             @apply text-xl font-semibold mb-4 text-indigo-700 border-b-2 border-indigo-200 pb-3;
+             @apply text-4xl font-extrabold mb-10 text-white pb-5 border-b-2 border-white/25; /* Título maior, mais peso, branco e borda mais sutil */
+             text-shadow: 0 3px 6px rgba(0,0,0,0.25);
+        }
+        .subsection-title { 
+            @apply text-2xl font-bold text-gray-50 mb-6 mt-4 pb-3 border-b border-white/20; /* Aumentado e mais peso */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        header h1 {
+            color: #ffffff; 
+            text-shadow: 0 3px 7px rgba(0,0,0,0.35);
+        }
+        .form-field-group > div {
+            margin-bottom: 1.75rem; 
+        }
+        .grid > div { 
+             margin-bottom: 1.25rem; 
+        }
+         .grid > div:last-child {
+            margin-bottom: 0;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="text-gray-800"> 
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-        <header class="mb-6 text-center">
-            <img src="https://www.passaporteedu.com.br/images/logotipo_slogan.svg" alt="Passaporte Edu Logo" id="logoImage" class="mx-auto mb-4 h-16 sm:h-20" crossorigin="anonymous" onerror="this.alt='Passaporte Edu Logo could not be loaded'; this.style.display='none'; document.getElementById('logo-error-message').style.display='block';">
-            <p id="logo-error-message" style="display:none;" class="text-red-500 text-sm">Logo could not be loaded from external URL.</p>
-            <h1 class="text-2xl sm:text-3xl font-bold text-indigo-700">Lesson Plan Generator</h1>
-        </header>
+        <header class="mb-14 text-center"> 
+            <img src="https://www.passaporteedu.com.br/images/logotipo_slogan.svg" alt="Passaporte Edu Logo" id="logoImage" class="mx-auto mb-7 h-32 sm:h-36" crossorigin="anonymous" onerror="this.alt='Passaporte Edu Logo could not be loaded'; this.style.display='none'; document.getElementById('logo-error-message').style.display='block';">
+            <p id="logo-error-message" style="display:none;" class="text-red-200 text-sm bg-red-800/50 p-2 rounded-md">Logo could not be loaded from external URL.</p>
+            <h1 class="text-5xl sm:text-6xl font-extrabold">Lesson Plan Generator</h1> </header>
 
-        <div id="message-area" class="mb-4"></div>
+        <div id="message-area" class="mb-10"></div>
 
-        <div class="section-container-alt">
+        <div class="section-container">
             <h2 class="section-title">Lesson Details</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <h3 class="subsection-title">Basic Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5 form-field-group"> 
                 <div>
                     <label for="teacher" class="form-label">Teacher:</label>
                     <input type="text" id="teacher" class="form-input">
-                </div>
-                <div>
-                    <label for="classType" class="form-label">Class Type:</label>
-                    <input type="text" id="classType" class="form-input">
-                </div>
-                <div class="md:col-span-2">
-                    <label for="lessonAim" class="form-label">Lesson's Aim:</label>
-                    <textarea id="lessonAim" rows="2" class="form-textarea"></textarea>
-                </div>
-                <div class="md:col-span-2">
-                    <label for="objective" class="form-label">Objective:</label>
-                    <textarea id="objective" rows="2" class="form-textarea"></textarea>
                 </div>
                 <div>
                     <label for="date" class="form-label">Date:</label>
                     <input type="date" id="date" class="form-input">
                 </div>
                 <div>
-                    <label for="class" class="form-label">Class:</label>
+                    <label for="class" class="form-label">Class (e.g., Teens 10):</label>
                     <input type="text" id="class" class="form-input">
-                </div>
-                <div>
-                    <label for="level" class="form-label">Level:</label>
-                    <input type="text" id="level" class="form-input">
                 </div>
                 <div>
                     <label for="numStudents" class="form-label">Number of Students:</label>
                     <input type="number" id="numStudents" class="form-input" min="0">
                 </div>
+            </div>
+
+            <h3 class="subsection-title">Lesson Objectives</h3>
+            <div class="grid grid-cols-1 gap-y-5 form-field-group">
+                 <div class="md:col-span-2"> 
+                    <label for="classType" class="form-label">Class Type:</label>
+                    <select id="classType" class="form-select">
+                        <option value="Presentation - Grammar">Presentation - Grammar</option>
+                        <option value="Presentation - Vocabulary">Presentation - Vocabulary</option>
+                        <option value="Presentation - Vocabulary/Grammar">Presentation - Vocabulary/Grammar</option>
+                        <option value="Consolidation">Consolidation</option>
+                        <option value="Skills">Skills</option>
+                        <option value="Review">Review</option>
+                        <option value="Written Test">Written Test</option>
+                        <option value="Oral Test">Oral Test</option>
+                        <option value="Pedagogical Meeting">Pedagogical Meeting</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="lessonAim" class="form-label">Lesson's Aim:</label>
+                    <textarea id="lessonAim" rows="3" class="form-textarea"></textarea> 
+                </div>
+                <div class="md:col-span-2">
+                    <label for="objective" class="form-label">Objective:</label>
+                    <textarea id="objective" rows="3" class="form-textarea"></textarea> 
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Course & Level Details</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5 form-field-group">
+                <div>
+                    <label for="levelCourseType" class="form-label">Course Type:</label>
+                    <select id="levelCourseType" class="form-select">
+                        <option value="KDGT">KDGT (Kindergarten)</option>
+                        <option value="Kids">Kids</option>
+                        <option value="PreTeens">PreTeens</option>
+                        <option value="Teens">Teens</option>
+                        <option value="YoungAdults">YoungAdults</option>
+                        <option value="Regular">Regular</option>
+                        <option value="BilingualComputing">BilingualComputing</option>
+                        <option value="Coding I">Coding I</option>
+                        <option value="Coding II">Coding II</option>
+                        <option value="Inteligência Financeira & Speeching">Inteligência Financeira & Speeching</option>
+                        <option value="Soft Skills, Carreira e Empreendedorismo">Soft Skills, Carreira e Empreendedorismo</option>
+                        <option value="Inter">Inter</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="levelDetail" class="form-label">Level/Book:</label>
+                    <select id="levelDetail" class="form-select">
+                        </select>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title">Additional Considerations</h3>
+             <div class="grid grid-cols-1 gap-y-5 form-field-group">
                 <div class="md:col-span-2">
                     <label for="possibleProblems" class="form-label">Possible Problems:</label>
-                    <textarea id="possibleProblems" rows="2" class="form-textarea"></textarea>
+                    <textarea id="possibleProblems" rows="3" class="form-textarea"></textarea> 
                 </div>
             </div>
         </div>
 
         <div class="section-container">
-            <div class="flex justify-between items-center mb-4 border-b-2 border-indigo-200 pb-3">
-                <h2 class="text-xl font-semibold text-indigo-700">Lesson Stages</h2>
-                <button id="openAddStageModal" class="btn btn-primary text-sm">+ Add Stage</button>
+            <div class="flex justify-between items-center mb-7 border-b-2 border-white/30 pb-5"> 
+                <h2 class="text-2xl font-bold text-white">Lesson Stages</h2> <button id="openAddStageModal" class="btn btn-add-stage text-base"> 
+                    <i class="fas fa-layer-group mr-2.5"></i> <span>Add New Stage</span>
+                </button>
             </div>
             <div id="stages-container">
                 </div>
         </div>
 
-        <footer class="mt-8 flex flex-wrap justify-center gap-3 sm:gap-4">
-            <button id="saveLessonPlan" class="btn btn-success">Save Plan</button>
-            <button id="loadLessonPlan" class="btn btn-secondary">Load Plan</button>
-            <button id="clearLessonPlan" class="btn btn-danger">Clear Plan</button>
-            <button id="downloadPdf" class="btn btn-primary">Download as PDF</button>
+        <footer class="mt-16 flex flex-col items-center justify-center gap-2 text-center"> <button id="saveLessonPlan" class="btn btn-success mb-3 w-full max-w-xs">Save Plan</button>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="loadLessonPlan" class="btn btn-secondary">Load Plan</button>
+                <button id="clearLessonPlan" class="btn btn-danger">Clear Plan</button>
+                <button id="downloadPdf" class="btn btn-primary">Download as PDF</button>
+            </div>
+            <p class="text-sm text-gray-100 mt-10 opacity-90">Developed By: Philippe Azevedo from Passaporte Edu Maceió. Version 2.0</p> 
         </footer>
-        <p class="text-xs text-gray-500 mt-4 text-center">PDF generation might have limitations with complex styling or direct SVG embedding.</p>
-
     </div>
 
     <div id="addStageModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="closeAddStageModal">&times;</span>
-            <h3 class="text-lg font-medium mb-4 text-indigo-600">Add New Stage</h3>
-            <div>
-                <label for="stageType" class="form-label">Stage Type:</label>
-                <select id="stageType" class="form-select mb-2">
-                    <option value="Warm Up!">Warm Up!</option>
-                    <option value="Presentation">Presentation</option>
-                    <option value="Practice">Practice</option>
-                    <option value="Production">Production</option>
-                    <option value="Break">Break</option>
-                    <option value="Wrap Up!">Wrap Up!</option>
-                    <option value="Homework">Homework</option>
-                    <option value="Custom">Custom</option>
-                </select>
-            </div>
-            <div>
-                <label for="newStageName" class="form-label">Stage Name (if Custom):</label>
-                <input type="text" id="newStageName" class="form-input mb-2" disabled>
-            </div>
-            <div>
-                <label for="newStageAim" class="form-label">Aim:</label>
-                <textarea id="newStageAim" rows="2" class="form-textarea mb-2"></textarea>
-            </div>
-            <div>
-                <label for="newStageActivity" class="form-label">Activity/Procedure:</label>
-                <textarea id="newStageActivity" rows="3" class="form-textarea mb-2"></textarea>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+        <div class="modal-content"> <span class="close-button" id="closeAddStageModal">&times;</span>
+            <h3 class="text-3xl font-bold mb-8">Add New Stage</h3> <div class="form-field-group">
                 <div>
-                    <label for="newStageFocus" class="form-label">Focus (e.g., T-S, S-S):</label>
-                    <input type="text" id="newStageFocus" class="form-input">
+                    <label for="stageType" class="form-label">Stage Type:</label>
+                    <select id="stageType" class="form-select mb-6"> 
+                        <option value="Warm Up!">Warm Up!</option>
+                        <option value="Presentation">Presentation</option>
+                        <option value="Practice">Practice</option>
+                        <option value="Production">Production</option>
+                        <option value="Break">Break</option>
+                        <option value="Wrap Up!">Wrap Up!</option>
+                        <option value="Homework">Homework</option>
+                        <option value="Custom">Custom</option>
+                    </select>
                 </div>
                 <div>
-                    <label for="newStageMaterial" class="form-label">Material:</label>
-                    <input type="text" id="newStageMaterial" class="form-input">
+                    <label for="newStageName" class="form-label">Stage Name (if Custom):</label>
+                    <input type="text" id="newStageName" class="form-input mb-6" disabled>
                 </div>
                 <div>
-                    <label for="newStageTiming" class="form-label">Timing (min):</label>
-                    <input type="number" id="newStageTiming" class="form-input" min="0">
+                    <label for="newStageAim" class="form-label">Aim:</label>
+                    <textarea id="newStageAim" rows="2" class="form-textarea mb-6"></textarea>
                 </div>
+                <div>
+                    <label for="newStageActivity" class="form-label">Activity/Procedure:</label>
+                    <textarea id="newStageActivity" rows="3" class="form-textarea mb-6"></textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-6 mb-6"> 
+                    <div>
+                        <label for="newStageFocus" class="form-label">Focus (e.g., T-S, S-S):</label>
+                        <input type="text" id="newStageFocus" class="form-input">
+                    </div>
+                    <div>
+                        <label for="newStageMaterial" class="form-label">Material:</label>
+                        <input type="text" id="newStageMaterial" class="form-input">
+                    </div>
+                    <div>
+                        <label for="newStageTiming" class="form-label">Timing (min):</label>
+                        <input type="number" id="newStageTiming" class="form-input" min="0">
+                    </div>
+                </div>
+                <div id="productionTimeWarning" class="text-red-700 bg-red-100 border border-red-300 p-3 rounded-lg text-sm mb-7" style="display: none;">Production stage should not exceed 20 minutes.</div> 
+                <button id="confirmAddStage" class="btn btn-primary w-full text-lg">Add Stage</button> 
             </div>
-            <div id="productionTimeWarning" class="text-red-500 text-sm mb-2" style="display: none;">Production stage should not exceed 20 minutes.</div>
-            <button id="confirmAddStage" class="btn btn-primary w-full">Add Stage</button>
         </div>
     </div>
 
@@ -224,17 +317,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const messageDiv = document.createElement('div');
         messageDiv.textContent = message;
-        messageDiv.className = `p-3 rounded-md mb-4 text-sm ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+        messageDiv.className = `p-4 rounded-2xl mb-6 text-base shadow-xl font-semibold ${type === 'success' ? 'bg-emerald-500/80 text-white border border-emerald-600' : 'bg-red-500/80 text-white border border-red-600'}`;
         messageArea.innerHTML = ''; 
         messageArea.appendChild(messageDiv);
         setTimeout(() => {
             if (messageArea.contains(messageDiv)) {
                  messageArea.innerHTML = '';
             }
-        }, 4000);
+        }, 5000);
     }
 
-    // Verifica se a biblioteca jsPDF foi carregada
     if (typeof jspdf === 'undefined' || typeof jspdf.jsPDF === 'undefined') {
         console.error("jsPDF library is not loaded correctly!");
         displayMessage("Error: The PDF generation library (jsPDF) failed to load. Please check your internet connection or try refreshing the page.", 'error');
@@ -248,43 +340,40 @@ document.addEventListener('DOMContentLoaded', function() {
         return; 
     }
     
-    // Verifica se o plugin jsPDF-AutoTable foi carregado
     const tempDocCheck = new jspdf.jsPDF();
     if (typeof tempDocCheck.autoTable !== 'function') {
         console.error("jsPDF-AutoTable plugin is not loaded correctly or not attached to jsPDF instances!");
         displayMessage("Error: The PDF table generation plugin (jsPDF-AutoTable) failed to load. Tables might not be generated correctly.", 'error');
     }
 
-
     const { jsPDF } = jspdf; 
 
-    // Estado da aplicação
     const appState = {
         teacher: '',
-        classType: '',
+        classType: 'Presentation - Grammar', 
         lessonAim: '',
         objective: '',
         date: '',
         class: '',
-        level: '',
+        levelCourseType: 'KDGT', 
+        levelDetail: '', 
         numStudents: '',
         possibleProblems: '',
         stages: []
     };
 
-    // Elementos DOM
     const teacherInput = document.getElementById('teacher');
-    const classTypeInput = document.getElementById('classType');
+    const classTypeSelect = document.getElementById('classType'); 
     const lessonAimInput = document.getElementById('lessonAim');
     const objectiveInput = document.getElementById('objective');
     const dateInput = document.getElementById('date');
     const classInput = document.getElementById('class');
-    const levelInput = document.getElementById('level');
+    const levelCourseTypeSelect = document.getElementById('levelCourseType');
+    const levelDetailSelect = document.getElementById('levelDetail');
     const numStudentsInput = document.getElementById('numStudents');
     const possibleProblemsInput = document.getElementById('possibleProblems');
     const stagesContainer = document.getElementById('stages-container');
 
-    // Elementos do Modal
     const addStageModal = document.getElementById('addStageModal');
     const openAddStageModalBtn = document.getElementById('openAddStageModal');
     const closeAddStageModalBtn = document.getElementById('closeAddStageModal');
@@ -297,16 +386,62 @@ document.addEventListener('DOMContentLoaded', function() {
     const newStageTimingInput = document.getElementById('newStageTiming');
     const confirmAddStageBtn = document.getElementById('confirmAddStage');
     const productionTimeWarning = document.getElementById('productionTimeWarning');
+
+    const levelOptionsConfig = {
+        standardLevels: ["A1-", "A1", "A1+", "A2-", "A2", "A2+"],
+        bilingualBooks: ["Livro 1", "Livro 2", "Livro 3", "Livro 4", "Livro 5", "Livro 6", "Livro 7", "Livro 8", "Livro 9", "Livro 10", "Livro 11", "Livro 12"],
+        interSpecificBooks: ["Book 1", "Book 2", "Cambridge"],
+        coursesWithNA: ["BilingualComputing"], 
+        coursesUsingBilingualBooks: ["Coding I", "Coding II", "Inteligência Financeira & Speeching", "Soft Skills, Carreira e Empreendedorismo"]
+    };
+
+    function populateLevelDetailOptions() {
+        const selectedCourseType = levelCourseTypeSelect.value;
+        let optionsToShow = [];
+        let disableLevelDetail = false;
+
+        if (levelOptionsConfig.coursesWithNA.includes(selectedCourseType)) {
+            optionsToShow = ["N/A (Não Aplicável)"];
+            disableLevelDetail = true;
+        } else if (levelOptionsConfig.coursesUsingBilingualBooks.includes(selectedCourseType)) {
+            optionsToShow = levelOptionsConfig.bilingualBooks;
+        } else if (selectedCourseType === "Inter") {
+            optionsToShow = levelOptionsConfig.interSpecificBooks;
+        } else { // KDGT, Kids, PreTeens, Teens, YoungAdults, Regular
+            optionsToShow = levelOptionsConfig.standardLevels;
+        }
+
+        levelDetailSelect.innerHTML = ''; 
+        optionsToShow.forEach(optionText => {
+            const option = document.createElement('option');
+            option.value = optionText;
+            option.textContent = optionText;
+            levelDetailSelect.appendChild(option);
+        });
+
+        levelDetailSelect.disabled = disableLevelDetail;
+
+        if (appState.levelDetail && optionsToShow.includes(appState.levelDetail)) {
+            levelDetailSelect.value = appState.levelDetail;
+        } else if (optionsToShow.length > 0) {
+            levelDetailSelect.value = optionsToShow[0]; 
+            appState.levelDetail = optionsToShow[0]; 
+        } else {
+            appState.levelDetail = ''; 
+        }
+    }
+
+    levelCourseTypeSelect.addEventListener('change', populateLevelDetailOptions);
     
-    // Salva o estado atual no localStorage
     function saveState() {
         appState.teacher = teacherInput.value;
-        appState.classType = classTypeInput.value;
+        appState.classType = classTypeSelect.value;
         appState.lessonAim = lessonAimInput.value;
         appState.objective = objectiveInput.value;
         appState.date = dateInput.value;
         appState.class = classInput.value;
-        appState.level = levelInput.value;
+        appState.levelCourseType = levelCourseTypeSelect.value;
+        appState.levelDetail = levelDetailSelect.disabled ? "N/A (Não Aplicável)" : levelDetailSelect.value;
         appState.numStudents = numStudentsInput.value;
         appState.possibleProblems = possibleProblemsInput.value;
         try {
@@ -318,7 +453,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Carrega o estado do localStorage
     function loadState() {
         try {
             const savedData = localStorage.getItem('lessonPlanData');
@@ -326,63 +460,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 const parsedData = JSON.parse(savedData);
                 Object.assign(appState, parsedData); 
                 teacherInput.value = appState.teacher || '';
-                classTypeInput.value = appState.classType || '';
+                classTypeSelect.value = appState.classType || 'Presentation - Grammar';
                 lessonAimInput.value = appState.lessonAim || '';
                 objectiveInput.value = appState.objective || '';
                 dateInput.value = appState.date || '';
                 classInput.value = appState.class || '';
-                levelInput.value = appState.level || '';
+                levelCourseTypeSelect.value = appState.levelCourseType || 'KDGT';
+                
+                populateLevelDetailOptions(); 
+                
                 numStudentsInput.value = appState.numStudents || '';
                 possibleProblemsInput.value = appState.possibleProblems || '';
                 appState.stages = Array.isArray(appState.stages) ? appState.stages : [];
                 renderStages();
                 displayMessage('Lesson plan loaded successfully!');
             } else {
-                renderStages(); // Renderiza mesmo que não haja dados salvos (estado vazio)
+                populateLevelDetailOptions(); 
+                renderStages(); 
             }
         } catch (e) {
             console.error("Error loading from localStorage:", e);
             displayMessage('Failed to load lesson plan. Saved data might be corrupted.', 'error');
             appState.stages = []; 
+            populateLevelDetailOptions();
             renderStages();
         }
     }
     
-    // Limpa o estado atual e o localStorage
     function clearState() {
         showConfirmationModal('Are you sure you want to clear the entire lesson plan? This cannot be undone.', () => {
             localStorage.removeItem('lessonPlanData');
-            // Reseta o objeto appState
             appState.teacher = '';
-            appState.classType = '';
+            appState.classType = 'Presentation - Grammar'; 
             appState.lessonAim = '';
             appState.objective = '';
-            appState.date = ''; // A data será resetada para o padrão depois
+            appState.date = ''; 
             appState.class = '';
-            appState.level = '';
+            appState.levelCourseType = 'KDGT';
             appState.numStudents = '';
             appState.possibleProblems = '';
             appState.stages = [];
-            // Limpa os campos do formulário
+            
             teacherInput.value = '';
-            classTypeInput.value = '';
+            classTypeSelect.value = 'Presentation - Grammar';
             lessonAimInput.value = '';
             objectiveInput.value = '';
             classInput.value = '';
-            levelInput.value = '';
+            levelCourseTypeSelect.value = 'KDGT';
+            populateLevelDetailOptions(); 
             numStudentsInput.value = '';
             possibleProblemsInput.value = '';
-            setDefaultDate(); // Define a data padrão novamente
+            setDefaultDate(); 
             renderStages();
             displayMessage('Lesson plan cleared.');
         });
     }
 
-    // Renderiza as etapas da aula na tela
     function renderStages() {
         stagesContainer.innerHTML = ''; 
         if (!appState.stages || appState.stages.length === 0) {
-            stagesContainer.innerHTML = '<p class="text-gray-500">No stages added yet. Click "+ Add Stage" to begin.</p>';
+            stagesContainer.innerHTML = '<p class="text-gray-200 text-center py-4 opacity-80">No stages added yet. Click "+ Add New Stage" to begin.</p>';
             return;
         }
         appState.stages.forEach((stage) => {
@@ -394,21 +531,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const stageFocus = stage.focus || '';
             const stageMaterial = stage.material || '';
             const stageTiming = stage.timing || '0';
-            const stageId = stage.id || crypto.randomUUID(); // Garante um ID
+            const stageId = stage.id || crypto.randomUUID(); 
             stageDiv.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
-                    <h4 class="text-md font-semibold text-indigo-500">${stageName}</h4>
-                    <button class="btn btn-danger btn-sm py-1 px-2 text-xs remove-stage" data-id="${stageId}">Remove</button>
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-xl font-semibold text-indigo-600">${stageName}</h4>
+                    <button class="btn btn-danger btn-sm py-1.5 px-3.5 text-xs remove-stage" data-id="${stageId}">Remove</button>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                    <div><strong class="font-medium">Aim:</strong> <textarea data-id="${stageId}" data-field="aim" class="form-textarea text-xs p-1 mt-1 h-16 stage-input">${stageAim}</textarea></div>
-                    <div><strong class="font-medium">Activity/Procedure:</strong> <textarea data-id="${stageId}" data-field="activity" class="form-textarea text-xs p-1 mt-1 h-16 stage-input">${stageActivity}</textarea></div>
-                    <div><strong class="font-medium">Focus:</strong> <input type="text" value="${stageFocus}" data-id="${stageId}" data-field="focus" class="form-input text-xs p-1 mt-1 stage-input"></div>
-                    <div><strong class="font-medium">Material:</strong> <input type="text" value="${stageMaterial}" data-id="${stageId}" data-field="material" class="form-input text-xs p-1 mt-1 stage-input"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-sm">
+                    <div><strong class="font-medium text-gray-700">Aim:</strong> <textarea data-id="${stageId}" data-field="aim" class="form-textarea text-sm p-3 mt-1.5 h-28 stage-input">${stageAim}</textarea></div>
+                    <div><strong class="font-medium text-gray-700">Activity/Procedure:</strong> <textarea data-id="${stageId}" data-field="activity" class="form-textarea text-sm p-3 mt-1.5 h-28 stage-input">${stageActivity}</textarea></div>
+                    <div><strong class="font-medium text-gray-700">Focus:</strong> <input type="text" value="${stageFocus}" data-id="${stageId}" data-field="focus" class="form-input text-sm p-3 mt-1.5 stage-input"></div>
+                    <div><strong class="font-medium text-gray-700">Material:</strong> <input type="text" value="${stageMaterial}" data-id="${stageId}" data-field="material" class="form-input text-sm p-3 mt-1.5 stage-input"></div>
                     <div class="${stageName === 'Production' && parseInt(stageTiming) > 20 ? 'text-red-500 font-bold' : ''}">
-                        <strong class="font-medium">Timing (min):</strong> 
-                        <input type="number" value="${stageTiming}" data-id="${stageId}" data-field="timing" class="form-input text-xs p-1 mt-1 stage-input" min="0">
-                        ${stageName === 'Production' && parseInt(stageTiming) > 20 ? '<span class="text-xs block">Max 20 min!</span>' : ''}
+                        <strong class="font-medium text-gray-700">Timing (min):</strong> 
+                        <input type="number" value="${stageTiming}" data-id="${stageId}" data-field="timing" class="form-input text-sm p-3 mt-1.5 stage-input" min="0">
+                        ${stageName === 'Production' && parseInt(stageTiming) > 20 ? '<span class="text-xs block mt-2">Max 20 min!</span>' : ''}
                     </div>
                 </div>
             `;
@@ -416,7 +553,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Manipula a alteração de inputs dentro das etapas
     function handleStageInputChange(event) {
         if (event.target.classList.contains('stage-input')) {
             const stageId = event.target.dataset.id;
@@ -425,19 +561,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const stageIndex = appState.stages.findIndex(s => s.id === stageId);
             if (stageIndex > -1) {
                 appState.stages[stageIndex][field] = value;
-                // Validação específica para o tempo da etapa de Production
                 if (appState.stages[stageIndex].name === 'Production' && field === 'timing') {
                     if (parseInt(value) > 20) {
                         displayMessage('Production stage timing should not exceed 20 minutes.', 'error');
                     }
-                    renderStages(); // Re-renderiza para mostrar aviso, se necessário
+                    renderStages(); 
                 }
             }
         }
     }
     stagesContainer.addEventListener('input', handleStageInputChange);
 
-    // Manipula cliques no container de etapas (para remover etapa)
     stagesContainer.addEventListener('click', (event) => {
         if (event.target.classList.contains('remove-stage')) {
             const stageId = event.target.dataset.id;
@@ -448,12 +582,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Lógica do Modal
     openAddStageModalBtn.onclick = () => {
         addStageModal.style.display = "block";
-        // Reseta o formulário do modal
         stageTypeSelect.value = "Warm Up!";
-        newStageNameInput.value = "Warm Up!"; // Preenche o nome padrão
+        newStageNameInput.value = "Warm Up!"; 
         newStageNameInput.disabled = true;
         newStageAimInput.value = "";
         newStageActivityInput.value = "";
@@ -463,30 +595,28 @@ document.addEventListener('DOMContentLoaded', function() {
         productionTimeWarning.style.display = "none";
     }
     closeAddStageModalBtn.onclick = () => addStageModal.style.display = "none";
-    window.onclick = (event) => { // Fecha o modal se clicar fora dele
+    window.onclick = (event) => { 
         if (event.target == addStageModal) {
             addStageModal.style.display = "none";
         }
     }
 
-    // Retorna o tempo padrão para cada tipo de etapa
     function getDefaultTiming(stageName) {
         switch(stageName) {
             case 'Warm Up!': return 7;
             case 'Practice': return 15;
-            case 'Production': return 20; // Produção tem máximo de 20 min
+            case 'Production': return 20; 
             default: return 10; 
         }
     }
 
-    // Atualiza o nome e tempo no modal ao mudar o tipo de etapa
     stageTypeSelect.addEventListener('change', () => {
         const selectedType = stageTypeSelect.value;
         if (selectedType === 'Custom') {
             newStageNameInput.disabled = false;
             newStageNameInput.value = "";
             newStageNameInput.focus();
-            newStageTimingInput.value = getDefaultTiming(selectedType); // Ou um padrão genérico
+            newStageTimingInput.value = getDefaultTiming(selectedType); 
         } else {
             newStageNameInput.disabled = true;
             newStageNameInput.value = selectedType; 
@@ -495,9 +625,8 @@ document.addEventListener('DOMContentLoaded', function() {
         checkProductionTimingModal();
     });
     newStageTimingInput.addEventListener('input', checkProductionTimingModal);
-    newStageNameInput.addEventListener('input', checkProductionTimingModal); // Verifica se o nome customizado virou "Production"
+    newStageNameInput.addEventListener('input', checkProductionTimingModal); 
 
-    // Mostra aviso se o tempo de Production exceder 20 min no modal
     function checkProductionTimingModal() {
         const stageName = (stageTypeSelect.value === 'Custom') ? newStageNameInput.value.trim() : stageTypeSelect.value;
         if (stageName === 'Production' && parseInt(newStageTimingInput.value) > 20) {
@@ -507,7 +636,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Confirma e adiciona nova etapa
     confirmAddStageBtn.onclick = () => {
         const type = stageTypeSelect.value;
         const name = (type === 'Custom') ? newStageNameInput.value.trim() : type;
@@ -516,14 +644,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const focus = newStageFocusInput.value.trim();
         const material = newStageMaterialInput.value.trim();
         const timing = newStageTimingInput.value.trim();
-        // Validações
         if (!name) {
             displayMessage('Stage name is required for Custom type.', 'error'); return;
         }
         if (!timing || isNaN(parseInt(timing)) || parseInt(timing) < 0) {
             displayMessage('Valid timing (a positive number) is required.', 'error'); return;
         }
-        // Confirmação para tempo de Production > 20 min
         if (name === 'Production' && parseInt(timing) > 20) {
             showConfirmationModal('Production stage timing exceeds 20 minutes. Do you want to proceed?', () => {
                 addStageToStateAndRender(name, aim, activity, focus, material, timing);
@@ -533,7 +659,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Adiciona a etapa ao estado e renderiza
     function addStageToStateAndRender(name, aim, activity, focus, material, timing) {
         appState.stages.push({ id: crypto.randomUUID(), name, aim, activity, focus, material, timing });
         renderStages();
@@ -541,24 +666,20 @@ document.addEventListener('DOMContentLoaded', function() {
         displayMessage(`Stage "${name}" added.`);
     }
     
-    // Converte uma imagem (incluindo SVG) para PNG Data URL usando um canvas
     function imageToPNGDataURL(imgElement, callback, errorCallback) {
-        const attemptConversion = () => {
+        const attemptConversion = (imageToConvert) => { 
             try {
                 const canvas = document.createElement('canvas');
-                canvas.width = imgElement.naturalWidth || imgElement.width || 300; 
-                canvas.height = imgElement.naturalHeight || imgElement.height || 150;
+                canvas.width = imageToConvert.naturalWidth || imageToConvert.width || 300; 
+                canvas.height = imageToConvert.naturalHeight || imageToConvert.height || 150;
                 const ctx = canvas.getContext('2d');
                 if (!ctx) {
                     if (errorCallback) errorCallback(new Error("Canvas 2D context not available"));
                     return;
                 }
-                // Define um fundo branco para o canvas caso a imagem SVG tenha transparência
-                // Isso evita que a transparência se torne preta no PNG.
-                ctx.fillStyle = "#FFFFFF"; // Cor de fundo branca
+                ctx.fillStyle = "#FFFFFF"; 
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(imageToConvert, 0, 0, canvas.width, canvas.height);
                 const dataURL = canvas.toDataURL('image/png');
                 callback(dataURL);
             } catch (e) {
@@ -567,29 +688,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
 
-        // Garante que a imagem (especialmente SVG de URL) esteja carregada
         if (imgElement.complete && (imgElement.naturalWidth !== 0 || imgElement.tagName !== 'IMG')) {
-            attemptConversion();
+            attemptConversion(imgElement);
         } else if (imgElement.tagName === 'IMG' && imgElement.src) {
-            // Para tags <img>, clona para garantir que o 'load' seja disparado corretamente
-            // Adicionado crossorigin="anonymous" na tag <img> no HTML
             const tempImage = new Image();
-            tempImage.crossOrigin = imgElement.crossOrigin || "anonymous"; // Usa o crossOrigin do elemento original
-            tempImage.onload = () => { // Usa arrow function para manter o 'this' de attemptConversion se necessário
-                 // Passa tempImage para attemptConversion, pois é ela que está carregada
-                const originalCanvas = document.createElement('canvas');
-                originalCanvas.width = tempImage.naturalWidth || tempImage.width || 300;
-                originalCanvas.height = tempImage.naturalHeight || tempImage.height || 150;
-                const originalCtx = originalCanvas.getContext('2d');
-                 if (!originalCtx) {
-                    if (errorCallback) errorCallback(new Error("Canvas 2D context not available for temp image"));
-                    return;
-                }
-                originalCtx.fillStyle = "#FFFFFF"; 
-                originalCtx.fillRect(0, 0, originalCanvas.width, originalCanvas.height);
-                originalCtx.drawImage(tempImage, 0, 0, originalCanvas.width, originalCanvas.height);
-                const dataURL = originalCanvas.toDataURL('image/png');
-                callback(dataURL);
+            tempImage.crossOrigin = imgElement.crossOrigin || "anonymous"; 
+            tempImage.onload = () => { 
+                attemptConversion(tempImage); 
             };
             tempImage.onerror = function() {
                 console.error("Error loading image for canvas conversion:", imgElement.src);
@@ -598,67 +703,54 @@ document.addEventListener('DOMContentLoaded', function() {
             tempImage.src = imgElement.src;
         } else {
             console.warn("Image element might not be fully loaded or is not an IMG tag with src. Attempting direct conversion (might fail).");
-            // Tenta a conversão direta como fallback, mas pode não funcionar para SVGs não carregados
-             if (imgElement.width && imgElement.height) { // Se tiver dimensões, tenta
-                attemptConversion();
+             if (imgElement.width && imgElement.height) { 
+                attemptConversion(imgElement);
             } else if (errorCallback) {
                 errorCallback(new Error("Image not ready for conversion and dimensions unknown."));
             }
         }
     }
 
-
-    // Gera o PDF
     async function generatePdf() {
         if (typeof jsPDF === 'undefined') { 
              displayMessage('PDF generation library not loaded. Cannot generate PDF.', 'error');
              return;
         }
-        const doc = new jsPDF(); 
+        const doc = new jsPDF({ orientation: 'landscape' }); 
         if (typeof doc.autoTable !== 'function') {
             displayMessage('PDF table generation plugin (autoTable) not available. Tables may not be generated.', 'warning');
         }
 
         displayMessage('Generating PDF... Please wait.', 'success');
-        saveState(); // Salva o estado atual antes de gerar
+        saveState(); 
 
-        // Cores da Passaporte Edu
-        const passaporteBlue = [42, 47, 103]; // RGB para #2A2F67
+        const royalBlue = [65, 105, 225]; 
+        const darkRoyalBlue = [25, 25, 112]; 
 
         let yPos = 15; 
         const logoImgElement = document.getElementById('logoImage');
-        let logoAdded = false;
-
+        
         if (logoImgElement && logoImgElement.src && logoImgElement.src !== window.location.href ) {
-            // Verifica se a imagem está visível (não deu erro no onerror do HTML)
             if (logoImgElement.style.display !== 'none') {
                 try {
                     const dataUrl = await new Promise((resolve, reject) => {
                         imageToPNGDataURL(logoImgElement, data => resolve(data), err => reject(err));
                     });
                     
-                    const logoWidth = 50; 
-                    const img = new Image(); // Usa uma nova imagem para obter as dimensões do DataURL
-                    img.onload = function() {
-                        const aspectRatio = img.height / img.width;
-                        const logoHeight = logoWidth * aspectRatio || 25; 
-                        const pageWidth = doc.internal.pageSize.getWidth();
-                        const logoX = (pageWidth - logoWidth) / 2;
-                        try {
-                            doc.addImage(dataUrl, 'PNG', logoX, yPos, logoWidth, logoHeight); 
-                            yPos += logoHeight + 10;
-                            logoAdded = true;
-                        } catch (addImgError) {
-                             console.error("jsPDF addImage error:", addImgError);
-                             displayMessage('Failed to add logo image to PDF after conversion: ' + (addImgError.message || 'Unknown error'), 'error');
-                        }
-                    }
-                    img.onerror = function() {
-                        console.error("Error loading DataURL into temp image for dimension calculation.");
-                        displayMessage('Failed to process logo dimensions for PDF.', 'error');
-                    }
-                    img.src = dataUrl; // Isso vai disparar o onload/onerror da img temporária
+                    const tempImgForDim = new Image();
+                    await new Promise((resolve, reject) => {
+                        tempImgForDim.onload = resolve;
+                        tempImgForDim.onerror = () => reject(new Error("Failed to load dataUrl into temp image for dimensions."));
+                        tempImgForDim.src = dataUrl;
+                    });
 
+                    const logoWidth = 40; 
+                    const aspectRatio = tempImgForDim.height / tempImgForDim.width;
+                    const logoHeight = logoWidth * aspectRatio || 20; 
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const logoX = (pageWidth - logoWidth) / 2;
+                    doc.addImage(dataUrl, 'PNG', logoX, yPos, logoWidth, logoHeight); 
+                    yPos += logoHeight + 8; 
                 } catch (e) {
                      console.error("Error processing logo for PDF:", e.message || e);
                      displayMessage('Failed to add logo to PDF: ' + (e.message || 'Unknown error'), 'error');
@@ -668,27 +760,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             console.warn("Logo image not found, not loaded, or src is invalid for PDF.");
-            if (logoImgElement && logoImgElement.src && !logoImgElement.src.startsWith('http')) {
-                // displayMessage('Logo src is not an HTTP/HTTPS URL, cannot fetch for PDF.', 'error');
-            }
         }
         
-        // Aguarda um pequeno tempo para a imagem ser processada, se necessário
-        // Isso é um paliativo, o ideal é que o código acima com Promises e onload resolva o timing
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-
-        // Título do Plano de Aula
-        doc.setFontSize(18);
+        doc.setFontSize(22); 
         doc.setFont("helvetica", "bold");
-        doc.setTextColor(passaporteBlue[0], passaporteBlue[1], passaporteBlue[2]);
+        doc.setTextColor(royalBlue[0], royalBlue[1], royalBlue[2]);
         doc.text("LESSON PLAN", doc.internal.pageSize.getWidth() / 2, yPos, { align: 'center' });
-        yPos += 10;
-        doc.setTextColor(0, 0, 0); // Reseta a cor do texto para preto
+        yPos += 14; 
+        doc.setTextColor(0, 0, 0); 
 
-        // Detalhes da Aula
-        doc.setFontSize(10);
+        doc.setFontSize(12); 
         doc.setFont("helvetica", "normal");
+        doc.setTextColor(royalBlue[0], royalBlue[1], royalBlue[2]); 
+
+        let levelForPdf = appState.levelCourseType;
+        if (appState.levelDetail && appState.levelDetail !== "N/A (Não Aplicável)") {
+            levelForPdf += ` - ${appState.levelDetail}`;
+        }
 
         const details = [
             { label: "Teacher", value: appState.teacher },
@@ -697,30 +785,48 @@ document.addEventListener('DOMContentLoaded', function() {
             { label: "Objective", value: appState.objective },
             { label: "Date", value: appState.date },
             { label: "Class", value: appState.class },
-            { label: "Level", value: appState.level },
+            { label: "Level", value: levelForPdf }, 
             { label: "Number of Students", value: appState.numStudents },
             { label: "Possible Problems", value: appState.possibleProblems },
         ];
         
-        details.forEach(detail => {
+        let currentX = 15;
+        const colWidth = (doc.internal.pageSize.getWidth() - 40) / 2; 
+        let maxHeightInRow = 0;
+
+        details.forEach((detail, index) => {
             if (detail.value) {
-                if (yPos > doc.internal.pageSize.getHeight() - 25) { // Verifica quebra de página
-                    doc.addPage(); yPos = 15;
+                if (index > 0 && index % 2 === 0) { 
+                    currentX = 15;
+                    yPos += maxHeightInRow + 6; 
+                    maxHeightInRow = 0;
                 }
+                 if (yPos > doc.internal.pageSize.getHeight() - 30 && currentX === 15) { 
+                    doc.addPage(); yPos = 15; currentX = 15; maxHeightInRow = 0;
+                }
+
                 doc.setFont("helvetica", "bold");
-                doc.text(`${detail.label}:`, 15, yPos);
+                doc.text(`${detail.label}:`, currentX, yPos);
                 doc.setFont("helvetica", "normal");
-                const textWidth = doc.internal.pageSize.getWidth() - 30 - doc.getTextWidth(`${detail.label}: `) - 2;
-                const splitValue = doc.splitTextToSize(detail.value, textWidth > 0 ? textWidth : 10); // Garante largura positiva
-                doc.text(splitValue, 15 + doc.getTextWidth(`${detail.label}: `) + 2, yPos);
-                yPos += (splitValue.length * 4) + 2; 
+                
+                const labelWidth = doc.getTextWidth(`${detail.label}: `) + 2;
+                const valueTextWidth = colWidth - labelWidth - 5; 
+                const splitValue = doc.splitTextToSize(String(detail.value), valueTextWidth > 0 ? valueTextWidth : 10); 
+                
+                doc.text(splitValue, currentX + labelWidth, yPos);
+                const currentItemHeight = (splitValue.length * 5.5); 
+                if (currentItemHeight > maxHeightInRow) {
+                    maxHeightInRow = currentItemHeight;
+                }
+                currentX += colWidth + 10; 
             }
         });
-        yPos += 5;
+        yPos += maxHeightInRow + 12; 
 
-        // Tabela de Etapas da Aula
+        doc.setTextColor(0,0,0); 
+
         if (appState.stages.length > 0) {
-             if (yPos > doc.internal.pageSize.getHeight() - 40) { // Verifica espaço para cabeçalho da tabela
+             if (yPos > doc.internal.pageSize.getHeight() - 50) { 
                 doc.addPage(); yPos = 15;
              }
             const head = [['STAGE', 'AIM', 'ACTIVITY/PROCEDURE', 'FOCUS', 'MATERIAL', 'TIMING (min)']];
@@ -734,53 +840,54 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: body,
                     theme: 'grid', 
                     headStyles: { 
-                        fillColor: passaporteBlue, 
+                        fillColor: darkRoyalBlue, 
                         textColor: [255, 255, 255], 
-                        fontStyle: 'bold' 
+                        fontStyle: 'bold',
+                        fontSize: 11 
                     },
-                    styles: { fontSize: 8, cellPadding: 1.5, overflow: 'linebreak' },
-                    columnStyles: {
-                        0: { cellWidth: 'auto' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 60 },   
-                        3: { cellWidth: 'auto' }, 4: { cellWidth: 'auto' }, 5: { cellWidth: 'auto', halign: 'right' } 
+                    styles: { 
+                        fontSize: 11, // Aumentado para 11pt
+                        cellPadding: 2.5, 
+                        overflow: 'linebreak',
+                        textColor: royalBlue 
                     },
+                    // Removido columnStyles para permitir que a biblioteca ajuste automaticamente
+                    // Isso é o "reset para o padrão" que você pediu.
                 });
             } else {
                 displayMessage("autoTable function not found. Table cannot be generated.", "error");
+                doc.setTextColor(royalBlue[0], royalBlue[1], royalBlue[2]);
                 doc.text("Table data could not be generated (autoTable plugin issue).", 15, yPos);
+                doc.setTextColor(0,0,0);
             }
         }
 
-        // Salva o PDF
         const fileName = `lesson_plan_${appState.class || 'general'}_${appState.date || new Date().toISOString().split('T')[0]}.pdf`;
-        doc.save(fileName.replace(/[^a-zA-Z0-9_.-]/g, '_')); // Sanitiza o nome do arquivo
+        doc.save(fileName.replace(/[^a-zA-Z0-9_.-]/g, '_')); 
         displayMessage('PDF generated and download started!');
     }
 
-    // Modal de confirmação simples
     function showConfirmationModal(message, onConfirm) {
         if (window.confirm(message)) { 
             onConfirm();
         }
     }
 
-    // Event Listeners dos botões
     document.getElementById('saveLessonPlan').addEventListener('click', saveState);
     document.getElementById('loadLessonPlan').addEventListener('click', loadState);
     document.getElementById('clearLessonPlan').addEventListener('click', clearState);
     document.getElementById('downloadPdf').addEventListener('click', generatePdf);
 
-    // Define a data padrão no input de data
     function setDefaultDate() {
         if (!dateInput.value) {
             const today = new Date();
-            const yyyy = today.getFullYear(); 
+            const currentYear = today.getFullYear(); 
             const mm = String(today.getMonth() + 1).padStart(2, '0'); 
             const dd = String(today.getDate()).padStart(2, '0');
-            dateInput.value = `${yyyy}-${mm}-${dd}`;
+            dateInput.value = `${currentYear}-${mm}-${dd}`;
         }
     }
 
-    // Carregamento inicial
     setDefaultDate();
     loadState(); 
 });
