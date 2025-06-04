@@ -7,7 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> <!-- Adicionado font-weight 800 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -150,13 +151,15 @@
         <header class="mb-14 text-center"> 
             <img src="https://www.passaporteedu.com.br/images/logotipo_slogan.svg" alt="Passaporte Edu Logo" id="logoImage" class="mx-auto mb-7 h-32 sm:h-36" crossorigin="anonymous" onerror="this.alt='Passaporte Edu Logo could not be loaded'; this.style.display='none'; document.getElementById('logo-error-message').style.display='block';">
             <p id="logo-error-message" style="display:none;" class="text-red-200 text-sm bg-red-800/50 p-2 rounded-md">Logo could not be loaded from external URL.</p>
-            <h1 class="text-5xl sm:text-6xl font-extrabold">Lesson Plan Generator</h1> </header>
+            <h1 class="text-5xl sm:text-6xl font-extrabold">Lesson Plan Generator</h1> <!-- Aumentado peso da fonte -->
+        </header>
 
         <div id="message-area" class="mb-10"></div>
 
         <div class="section-container">
             <h2 class="section-title">Lesson Details</h2>
             
+            <!-- Subseção: Informações Básicas -->
             <h3 class="subsection-title">Basic Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5 form-field-group"> 
                 <div>
@@ -177,6 +180,7 @@
                 </div>
             </div>
 
+            <!-- Subseção: Objetivos da Aula -->
             <h3 class="subsection-title">Lesson Objectives</h3>
             <div class="grid grid-cols-1 gap-y-5 form-field-group">
                  <div class="md:col-span-2"> 
@@ -203,6 +207,7 @@
                 </div>
             </div>
 
+            <!-- Subseção: Detalhes da Turma -->
             <h3 class="subsection-title">Course & Level Details</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5 form-field-group">
                 <div>
@@ -220,15 +225,18 @@
                         <option value="Inteligência Financeira & Speeching">Inteligência Financeira & Speeching</option>
                         <option value="Soft Skills, Carreira e Empreendedorismo">Soft Skills, Carreira e Empreendedorismo</option>
                         <option value="Inter">Inter</option>
+                        <option value="Espanhol">Espanhol</option> <!-- Novo Curso Adicionado -->
                     </select>
                 </div>
                 <div>
                     <label for="levelDetail" class="form-label">Level/Book:</label>
                     <select id="levelDetail" class="form-select">
-                        </select>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
                 </div>
             </div>
             
+            <!-- Subseção: Considerações Adicionais -->
             <h3 class="subsection-title">Additional Considerations</h3>
              <div class="grid grid-cols-1 gap-y-5 form-field-group">
                 <div class="md:col-span-2">
@@ -240,15 +248,19 @@
 
         <div class="section-container">
             <div class="flex justify-between items-center mb-7 border-b-2 border-white/30 pb-5"> 
-                <h2 class="text-2xl font-bold text-white">Lesson Stages</h2> <button id="openAddStageModal" class="btn btn-add-stage text-base"> 
-                    <i class="fas fa-layer-group mr-2.5"></i> <span>Add New Stage</span>
+                <h2 class="text-2xl font-bold text-white">Lesson Stages</h2> <!-- Aumentado peso da fonte -->
+                <button id="openAddStageModal" class="btn btn-add-stage text-base"> 
+                    <i class="fas fa-layer-group mr-2.5"></i> <!-- Ícone diferente e mais margem -->
+                    <span>Add New Stage</span>
                 </button>
             </div>
             <div id="stages-container">
-                </div>
+                <!-- As etapas da aula serão adicionadas dinamicamente aqui -->
+            </div>
         </div>
 
-        <footer class="mt-16 flex flex-col items-center justify-center gap-2 text-center"> <button id="saveLessonPlan" class="btn btn-success mb-3 w-full max-w-xs">Save Plan</button>
+        <footer class="mt-16 flex flex-col items-center justify-center gap-2 text-center"> <!-- Aumentada margem e gap -->
+            <button id="saveLessonPlan" class="btn btn-success mb-3 w-full max-w-xs">Save Plan</button>
             <div class="flex flex-wrap justify-center gap-4">
                 <button id="loadLessonPlan" class="btn btn-secondary">Load Plan</button>
                 <button id="clearLessonPlan" class="btn btn-danger">Clear Plan</button>
@@ -258,9 +270,12 @@
         </footer>
     </div>
 
+    <!-- Modal Adicionar Etapa -->
     <div id="addStageModal" class="modal">
-        <div class="modal-content"> <span class="close-button" id="closeAddStageModal">&times;</span>
-            <h3 class="text-3xl font-bold mb-8">Add New Stage</h3> <div class="form-field-group">
+        <div class="modal-content"> <!-- O estilo do modal-content já foi alterado para o degradê pastel -->
+            <span class="close-button" id="closeAddStageModal">&times;</span>
+            <h3 class="text-3xl font-bold mb-8">Add New Stage</h3> <!-- Cor do título do modal será escura para contraste -->
+            <div class="form-field-group">
                 <div>
                     <label for="stageType" class="form-label">Stage Type:</label>
                     <select id="stageType" class="form-select mb-6"> 
@@ -391,6 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
         standardLevels: ["A1-", "A1", "A1+", "A2-", "A2", "A2+"],
         bilingualBooks: ["Livro 1", "Livro 2", "Livro 3", "Livro 4", "Livro 5", "Livro 6", "Livro 7", "Livro 8", "Livro 9", "Livro 10", "Livro 11", "Livro 12"],
         interSpecificBooks: ["Book 1", "Book 2", "Cambridge"],
+        espanholLevels: ["Espanhol A1-", "Espanhol A1", "Espanhol A1+", "Espanhol A2-", "Espanhol A2", "Espanhol A2+"],
         coursesWithNA: ["BilingualComputing"], 
         coursesUsingBilingualBooks: ["Coding I", "Coding II", "Inteligência Financeira & Speeching", "Soft Skills, Carreira e Empreendedorismo"]
     };
@@ -407,6 +423,8 @@ document.addEventListener('DOMContentLoaded', function() {
             optionsToShow = levelOptionsConfig.bilingualBooks;
         } else if (selectedCourseType === "Inter") {
             optionsToShow = levelOptionsConfig.interSpecificBooks;
+        } else if (selectedCourseType === "Espanhol") { // Novo caso para Espanhol
+            optionsToShow = levelOptionsConfig.espanholLevels;
         } else { // KDGT, Kids, PreTeens, Teens, YoungAdults, Regular
             optionsToShow = levelOptionsConfig.standardLevels;
         }
@@ -846,13 +864,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         fontSize: 11 
                     },
                     styles: { 
-                        fontSize: 11, // Aumentado para 11pt
+                        fontSize: 11, 
                         cellPadding: 2.5, 
                         overflow: 'linebreak',
                         textColor: royalBlue 
                     },
                     // Removido columnStyles para permitir que a biblioteca ajuste automaticamente
-                    // Isso é o "reset para o padrão" que você pediu.
                 });
             } else {
                 displayMessage("autoTable function not found. Table cannot be generated.", "error");
